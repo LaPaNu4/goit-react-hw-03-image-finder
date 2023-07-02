@@ -14,14 +14,36 @@ export class App extends React.Component {
     imageName: '',
     loading: false,
     images: [],
+    totalImages: 0,
     page: 1,
     modalOpen: false,
     error: null,
     selectedImage: null,
   };
 
+  async componentDidUpdate(prevProps, prevState) {
+    const {images, imageName, page } = this.state;
+    if (prevState.imageName !== imageName || prevState.page !== page) {
+      try {
+        if (images.length === 0) {
+          this.setState({ loading: true });
+        }
+        
+        const data = await fetchPost(imageName, page);
+        this.setState({
+          images: [...images, ...data.hits],
+          totalImages : data.totalHits,
+        });
+      } catch (error) {
+        this.setState({ error });
+      } finally {
+        this.setState({ loading: false });
+      }
+    }
+  }
+
   onSubmit = imageName => {
-    this.setState({ imageName, page: 1, images: [] });
+    this.setState({ imageName, page: 1, images: [] , totalImages: 0});
   };
   onLoadMore = () => {
     this.setState(prevState => ({
@@ -35,19 +57,16 @@ export class App extends React.Component {
   closeModal = () => {
     this.setState({ modalOpen: false, selectedImage: null });
   };
-  handleKeyDown = event => {
-    if (event.code === 'Escape') {
-      this.closeModal();
-    }
-  };
+ 
 
   render() {
-    const { images, loading, modalOpen, selectedImage } = this.state;
+    const { images, loading, modalOpen, selectedImage , totalImages } = this.state;
+      const showButton = images.length + 1 < totalImages;
     return (
       <AppS>
         <SearchBar onSubmit={this.onSubmit} />
         <ImageGallery data={images} onItemClick={this.openModal} />
-        {images.length > 0 && (
+        {images.length > 0 && showButton && (
           <Button onLoadMore={this.onLoadMore} />
         )}
         {loading && <Loader />}
@@ -61,40 +80,4 @@ export class App extends React.Component {
       </AppS>
     );
   }
-
-  async componentDidUpdate(prevProps, prevState) {
-    const { imageName, page } = this.state;
-    if (
-      prevState.imageName !== imageName ||
-      prevState.page !== page
-    ) {
-      try {
-        this.setState({ loading: true });
-        const images = await fetchPost(imageName, page);
-
-        const updatedImages = [...images, ...images.hits];
-        this.setState({ images: updatedImages, loading: false });
-      } catch (error) {
-        this.setState({ error });
-      } finally {
-        this.setState({ loading: false });
-      }
-    }
-  }
 }
-
-// async componentDidMount() {
-//   if (this.stateimageName) {
-//     try {
-//       console.log('mount');
-//       this.setState({ loading: true });
-//       const images = await fetchPost(this.state.imageName, this.state.page);
-
-//       this.setState({ images: images.hits, loading: false });
-//     } catch (error) {
-//       this.setState({ error });
-//     } finally {
-//       this.setState({ loading: false });
-//     }
-//   }
-// }
