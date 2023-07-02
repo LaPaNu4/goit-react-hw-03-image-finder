@@ -1,5 +1,7 @@
 import React from 'react';
 import { SearchBarHeader } from './SearchBar.styled';
+import PropTypes from 'prop-types';
+
 
 export class SearchBar extends React.PureComponent  {
  handleSubmit = event => {
@@ -35,4 +37,8 @@ export class SearchBar extends React.PureComponent  {
   );
 }
   
+};
+
+SearchBar.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
 };

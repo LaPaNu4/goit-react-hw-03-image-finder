@@ -42,17 +42,18 @@ export class App extends React.Component {
   };
 
   render() {
+    const { images, loading, modalOpen, selectedImage } = this.state;
     return (
       <AppS>
         <SearchBar onSubmit={this.onSubmit} />
-        <ImageGallery data={this.state.images} onItemClick={this.openModal} />
-        {this.state.images.length > 0 && (
+        <ImageGallery data={images} onItemClick={this.openModal} />
+        {images.length > 0 && (
           <Button onLoadMore={this.onLoadMore} />
         )}
-        {this.state.loading && <Loader />}
-        {this.state.modalOpen && (
+        {loading && <Loader />}
+        {modalOpen && (
           <Modal
-            image={this.state.selectedImage}
+            image={selectedImage}
             onClose={this.closeModal}
             onKeyDown={this.handleKeyDown}
           />
@@ -62,15 +63,16 @@ export class App extends React.Component {
   }
 
   async componentDidUpdate(prevProps, prevState) {
+    const { imageName, page } = this.state;
     if (
-      prevState.imageName !== this.state.imageName ||
-      prevState.page !== this.state.page
+      prevState.imageName !== imageName ||
+      prevState.page !== page
     ) {
       try {
         this.setState({ loading: true });
-        const images = await fetchPost(this.state.imageName, this.state.page);
+        const images = await fetchPost(imageName, page);
 
-        const updatedImages = [...this.state.images, ...images.hits];
+        const updatedImages = [...images, ...images.hits];
         this.setState({ images: updatedImages, loading: false });
       } catch (error) {
         this.setState({ error });
@@ -82,7 +84,7 @@ export class App extends React.Component {
 }
 
 // async componentDidMount() {
-//   if (this.state.imageName) {
+//   if (this.stateimageName) {
 //     try {
 //       console.log('mount');
 //       this.setState({ loading: true });

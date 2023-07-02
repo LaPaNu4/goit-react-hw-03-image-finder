@@ -1,5 +1,6 @@
 import React from 'react';
 import { ModalS } from './Modal.styled';
+import PropTypes from 'prop-types';
 
 export class Modal extends React.PureComponent {
   handleOverlayClick = event => {
@@ -8,13 +9,15 @@ export class Modal extends React.PureComponent {
     }
   };
 
+
   render() {
+      const { image } = this.props;
     return (
       <ModalS onClick={this.handleOverlayClick}>
         <div className="Modal" onKeyDown={this.props.onKeyDown}>
           <img
-            src={this.props.image.largeImageURL}
-            alt={this.props.image.tags}
+            src={image.largeImageURL}
+            alt={image.tags}
           />
         </div>
       </ModalS>
@@ -27,4 +30,10 @@ export class Modal extends React.PureComponent {
   componentWillUnmount() {
     window.removeEventListener('keydown', this.props.onKeyDown);
   }
+}
+
+Modal.propTypes = {
+  image: PropTypes.object.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onKeyDown: PropTypes.func.isRequired
 }

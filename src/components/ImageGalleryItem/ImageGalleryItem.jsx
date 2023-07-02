@@ -1,5 +1,5 @@
 import { ImageGalleryItemS } from "./ImageGalleryItem.styled";
-
+import PropTypes from 'prop-types';
 
 export const ImageGalleryItem = ({ data, onItemClick }) => {
   return data.map(image => {
@@ -13,4 +13,9 @@ export const ImageGalleryItem = ({ data, onItemClick }) => {
       </ImageGalleryItemS>
     );
   });
+};
+
+ImageGalleryItem.propTypes = {
+  data: PropTypes.array.isRequired,
+  onItemClick: PropTypes.func.isRequired,
 };
